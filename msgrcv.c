@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
 	int msg_id = 0;
 	MSG_TYPE data;
-	long int msgtype = 0;
+	SINT32 msgtype = 0;
 
 	msg_id = msgget(MSG_ID_TEST, 0666 | IPC_CREAT);
 
@@ -20,12 +20,25 @@ int main(int argc, char **argv)
 
 	while(1)
 	{
-		if(-1 == msgrcv(msg_id, (void *)&data, BUFSIZE, msgtype, 0))
+		if(-1 == msgrcv(msg_id, (void *)&data, sizeof(MSG_TYPE) - sizeof(SINT32), msgtype, 0))
 		{
 			printf("msgrcv fail\n");
 			exit(-1);
 		}
-		printf("You wrote: %s\n", data.text);
+		
+		switch(data.id)
+		{
+			case MSG_SEND_ID1:
+				printf("send1 you wrote: %s\n", data.text);
+				break;
+
+			case MSG_SEND_ID2:
+				printf("send2 you wrote: %s\n", data.text);
+				break;
+				
+			default:
+				break;
+		}
  
         if (strncmp(data.text, "end", 3) == 0)
         {
